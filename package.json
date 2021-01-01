@@ -17,20 +17,22 @@
   },
   "dependencies": {
     "@friends-library/adoc-convert": "^1.1.2",
-    "@friends-library/cover-component": "^1.0.0",
-    "@friends-library/doc-css": "^1.1.1",
-    "@friends-library/doc-html": "^1.1.1",
-    "@friends-library/types": "^1.1.1",
+    "@friends-library/cover-component": "^3.1.1",
+    "@friends-library/doc-css": "^1.2.0",
+    "@friends-library/doc-html": "^1.2.0",
+    "@friends-library/types": "^3.0.0",
     "@types/react": "16.9.11",
     "@types/react-dom": "^16.9.0",
     "moment": "^2.29.0",
     "react": "16.10.1",
     "react-dom": "16.10.1",
     "roman-numerals": "^0.3.2",
-    "strip-indent": "^3.0.0"
+    "strip-indent": "^3.0.0",
+    "x-ts-utils": "^1.0.1"
   },
   "devDependencies": {
-    "@friends-library/dev": "^4.1.6",
-    "@types/lodash": "^4.14.161"
+    "@friends-library/dev": "^4.1.16",
+    "@types/lodash": "^4.14.161",
+    "@types/roman-numerals": "^0.3.0"
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
+import { isDefined } from 'x-ts-utils';
 import {
   PaperbackCoverConfig,
   FileManifest,
@@ -15,26 +16,28 @@ export default async function paperbackCover(
   { printSize, volumes, showGuides }: PaperbackCoverConfig,
 ): Promise<FileManifest[]> {
   return Promise.resolve(
-    volumes.map((numPages, fauxVolIdx) => {
-      return paperbackCoverFromProps({
-        author: dpc.meta.author.name,
-        title: addVolumeSuffix(
-          dpc.meta.title,
-          volumes.length > 1 ? fauxVolIdx : undefined,
-        ),
-        fauxVolumeNum: volumes.length > 1 ? fauxVolIdx + 1 : undefined,
-        isCompilation: dpc.isCompilation,
-        lang: dpc.lang,
-        edition: dpc.editionType,
-        showGuides: showGuides || false,
-        customCss: dpc.customCode.css[`paperback-cover`] || ``,
-        customHtml: dpc.customCode.html[`paperback-cover`] || ``,
-        size: printSize,
-        isbn: dpc.meta.isbn,
-        pages: numPages,
-        blurb: dpc.blurb,
-      })[0];
-    }),
+    volumes
+      .map((numPages, fauxVolIdx) => {
+        return paperbackCoverFromProps({
+          author: dpc.meta.author.name,
+          title: addVolumeSuffix(
+            dpc.meta.title,
+            volumes.length > 1 ? fauxVolIdx : undefined,
+          ),
+          fauxVolumeNum: volumes.length > 1 ? fauxVolIdx + 1 : undefined,
+          isCompilation: dpc.isCompilation,
+          lang: dpc.lang,
+          edition: dpc.editionType,
+          showGuides: showGuides || false,
+          customCss: dpc.customCode.css[`paperback-cover`] || ``,
+          customHtml: dpc.customCode.html[`paperback-cover`] || ``,
+          size: printSize,
+          isbn: dpc.meta.isbn,
+          pages: numPages,
+          blurb: dpc.blurb,
+        })[0];
+      })
+      .filter(isDefined),
   );
 }
 
