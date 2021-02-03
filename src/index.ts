@@ -4,3 +4,4 @@ export { default as epub, epubFromEbook } from './epub';
 export { default as mobi, mobiFromEbook } from './mobi';
 export { default as ebook } from './ebook';
 export { default as webPdf } from './web-pdf';
+export { default as speech } from './speech';

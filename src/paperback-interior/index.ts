@@ -17,26 +17,38 @@ import {
   inlineNotes,
   HtmlStep,
 } from '../pdf-shared';
+import { html as evalHtml } from '../../../evaluator/dist';
 
 export default async function paperbackInteriorManifests(
   dpc: DocPrecursor,
   conf: PaperbackInteriorConfig,
 ): Promise<FileManifest[]> {
-  const docCss = css(dpc, conf);
+  const docCss = css({
+    // @TODO need real values
+    runningHeadTitle: `temp rofl`,
+    numFootnotes: 555,
+    printSize: `m`,
+  });
+
+  const chHtml = evalHtml(dpc).chapters.join(`\n`);
+
   if (conf.allowSplits === false || dpc.paperbackSplits.length === 0) {
     return [
       {
-        'doc.html': html(dpc, conf),
+        'doc.html': wrapHtml([chHtml, dpc, conf])[0],
         'doc.css': docCss,
         'line.svg': lineSvgMarkup(),
       },
     ];
   }
 
+  // TODO
+  return [];
+
   return [...dpc.paperbackSplits, Infinity].map((split, volIdx) => {
     return {
       'doc.html': html(dpc, conf, volIdx),
-      'doc.css': docCss,
+      'doc.css': ``,
       'line.svg': lineSvgMarkup(),
     };
   });

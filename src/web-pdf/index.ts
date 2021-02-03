@@ -10,19 +10,21 @@ import {
   HtmlStep,
   HtmlStepConfig,
 } from '../pdf-shared';
+import { html as evalHtml } from '../../../evaluator/dist';
 
 export default async function webPdfManifests(
   dpc: DocPrecursor,
 ): Promise<FileManifest[]> {
   const conf = { frontmatter: false, condense: false, allowSplits: false };
-  const docCss = css(dpc);
-  return [
+  const { chapters } = evalHtml(dpc);
+  const mannys = [
     {
-      'doc.html': html(dpc, conf),
-      'doc.css': docCss,
+      'doc.html': wrapHtml([chapters.join(``), dpc, conf])[0],
+      'doc.css': css({ runningHeadTitle: `roflcopter` }),
       'line.svg': lineSvgMarkup(),
     },
   ];
+  return mannys;
 }
 
 function html(dpc: DocPrecursor, conf: HtmlStepConfig, volIdx?: number): Html {
