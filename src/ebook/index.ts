@@ -6,30 +6,32 @@ import {
   Html,
   Lang,
 } from '@friends-library/types';
-import { replaceHeadings } from '@friends-library/doc-html';
 import { mobi as mobiCss, epub as epubCss } from '@friends-library/doc-css';
 import { packageDocument } from './package-document';
-import wrapHtmlBody from '../wrap-html';
+import wrapHtmlBody from '../utils';
 import { nav } from './nav';
-import { makeFootnoteCallReplacer, notesMarkup } from './notes';
-import { flow } from 'lodash';
-import { frontmatter } from '../frontmatter';
+import ebookFrontmatter from './frontmatter';
+import { evaluate as eval, EbookSrcResult } from '../../../evaluator/dist';
+import { getCustomCss } from '../custom-css';
 
 export default async function ebook(
   dpc: DocPrecursor,
   conf: EbookConfig,
 ): Promise<FileManifest[]> {
+  const src = eval.toEbookSrcHtml(dpc);
+  const customCss = getCustomCss(dpc.customCode.css, conf.subType);
+  const config = { customCss };
   return [
     {
       mimetype: `application/epub+zip`,
       'META-INF/container.xml': container(),
-      'OEBPS/style.css': conf.subType === `epub` ? epubCss(dpc) : mobiCss(dpc),
-      'OEBPS/package-document.opf': packageDocument(dpc, conf),
-      'OEBPS/nav.xhtml': wrapEbookBodyHtml(nav(dpc, conf), dpc.lang),
+      'OEBPS/style.css': conf.subType === `epub` ? epubCss(config) : mobiCss(config),
+      'OEBPS/package-document.opf': packageDocument(dpc, conf, src),
+      'OEBPS/nav.xhtml': wrapEbookBodyHtml(nav(dpc, conf, src), dpc.lang),
       ...coverFiles(dpc, conf.coverImg),
-      ...sectionFiles(dpc),
-      ...notesFile(dpc),
-      ...frontmatterFiles(dpc),
+      ...sectionFiles(src, dpc.lang),
+      ...notesFile(src, dpc.lang),
+      ...frontmatterFiles(dpc, conf, src),
     },
   ];
 }
@@ -66,32 +68,33 @@ function wrapEbookBodyHtml(bodyHtml: Html, lang: Lang, bodyClass?: string): Html
   });
 }
 
-function sectionFiles(dpc: DocPrecursor): Record<string, Html> {
-  const { sections, lang } = dpc;
-  const replaceFootnoteCalls = makeFootnoteCallReplacer(dpc);
-  return sections.reduce((files, section) => {
-    files[`OEBPS/${section.id}.xhtml`] = flow([
-      replaceFootnoteCalls,
-      (html) => replaceHeadings(html, section.heading, dpc),
-      (html) => wrapEbookBodyHtml(html, lang),
-    ])(section.html);
-    return files;
-  }, {} as Record<string, Html>);
+function sectionFiles(src: EbookSrcResult, lang: Lang): Record<string, Html> {
+  const files: Record<string, Html> = {};
+  src.chapters.forEach(({ content: html }, index) => {
+    files[`OEBPS/chapter-${index + 1}.xhtml`] = wrapEbookBodyHtml(html, lang);
+  });
+  return files;
 }
 
-function notesFile(dpc: DocPrecursor): Record<string, Html> {
-  const { notes } = dpc;
-  if (!notes.size) {
+function notesFile(src: EbookSrcResult, lang: Lang): Record<string, Html> {
+  if (!src.hasFootnotes) {
     return {};
   }
   return {
-    'OEBPS/notes.xhtml': wrapEbookBodyHtml(notesMarkup(dpc), dpc.lang),
+    'OEBPS/notes.xhtml': wrapEbookBodyHtml(src.notesContentHtml, lang),
   };
 }
 
-function frontmatterFiles(dpc: DocPrecursor): Record<string, Html> {
-  return Object.entries(frontmatter(dpc)).reduce((files, [slug, html]) => {
-    files[`OEBPS/${slug}.xhtml`] = wrapEbookBodyHtml(String(html), dpc.lang);
-    return files;
-  }, {} as Record<string, Html>);
+function frontmatterFiles(
+  dpc: DocPrecursor,
+  conf: EbookConfig,
+  src: EbookSrcResult,
+): Record<string, Html> {
+  return Object.entries(ebookFrontmatter(dpc, src, conf.subType)).reduce(
+    (files, [slug, html]) => {
+      files[`OEBPS/${slug}.xhtml`] = wrapEbookBodyHtml(String(html), dpc.lang);
+      return files;
+    },
+    {} as Record<string, Html>,
+  );
 }

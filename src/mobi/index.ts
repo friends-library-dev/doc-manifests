@@ -15,7 +15,7 @@ export function mobiFromEbook(manifests: FileManifest[]): FileManifest[] {
     return mapValues(manifest, (content) => {
       if (typeof content !== `string`) return content;
       return content.replace(
-        /<meta charset="UTF-8"\/>/gm,
+        /<meta charset="UTF-8" ?\/>/gm,
         `<meta http-equiv="Content-Type" content="application/xml+xhtml; charset=UTF-8"/>`,
       );
     });

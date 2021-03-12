@@ -1,99 +1,70 @@
-import { paperbackInterior as css } from '@friends-library/doc-css';
-import flow from 'lodash/flow';
+import { paperbackInterior as paperbackInteriorCss } from '@friends-library/doc-css';
 import {
   DocPrecursor,
   Html,
   FileManifest,
   PaperbackInteriorConfig,
+  PrintSize,
 } from '@friends-library/types';
 import { getPrintSizeDetails } from '@friends-library/lulu';
-import { removeMobi7Tags } from '@friends-library/doc-html';
-import wrapHtmlBody from '../wrap-html';
+import wrapHtmlBody from '../utils';
 import frontmatter from './frontmatter';
-import {
-  makeVolumeSplitFilter,
-  lineSvgMarkup,
-  joinSections,
-  inlineNotes,
-  HtmlStep,
-} from '../pdf-shared';
-import { html as evalHtml } from '../../../evaluator/dist';
+import { lineSvgMarkup, runningHead } from '../pdf-shared';
+import { evaluate as eval, PdfSrcResult } from '../../../evaluator/dist';
+import { getCustomCss } from '../custom-css';
+import { rangeFromVolIdx } from '../faux-volumes';
 
 export default async function paperbackInteriorManifests(
   dpc: DocPrecursor,
   conf: PaperbackInteriorConfig,
 ): Promise<FileManifest[]> {
-  const docCss = css({
-    // @TODO need real values
-    runningHeadTitle: `temp rofl`,
-    numFootnotes: 555,
-    printSize: `m`,
-  });
+  const src = eval.toPdfSrcHtml(dpc);
 
-  const chHtml = evalHtml(dpc).chapters.join(`\n`);
+  const css = paperbackInteriorCss({
+    runningHeadTitle: runningHead(dpc, src.numChapters),
+    numFootnotes: src.numFootnotes,
+    printSize: conf.printSize,
+    customCss: getCustomCss(dpc.customCode.css, `paperback-interior`),
+    condense: conf.condense,
+  });
 
   if (conf.allowSplits === false || dpc.paperbackSplits.length === 0) {
     return [
       {
-        'doc.html': wrapHtml([chHtml, dpc, conf])[0],
-        'doc.css': docCss,
+        'doc.html': wrapHtml(pdfHtml(src, dpc, conf.frontmatter), dpc, conf.printSize),
+        'doc.css': css,
         'line.svg': lineSvgMarkup(),
       },
     ];
   }
 
-  // TODO
-  return [];
-
-  return [...dpc.paperbackSplits, Infinity].map((split, volIdx) => {
+  return [...dpc.paperbackSplits, Infinity].map((_, volIdx) => {
     return {
-      'doc.html': html(dpc, conf, volIdx),
-      'doc.css': ``,
+      'doc.html': pdfHtml(src, dpc, conf.frontmatter, volIdx),
+      'doc.css': css,
       'line.svg': lineSvgMarkup(),
     };
   });
 }
 
-function html(dpc: DocPrecursor, conf: PaperbackInteriorConfig, volIdx?: number): Html {
-  return flow([
-    joinSections,
-    addFirstChapterClass,
-    inlineNotes,
-    prependFrontmatter,
-    ([html, d, c, i]) => [removeMobi7Tags(html), d, c, i],
-    wrapHtml,
-  ])([``, dpc, conf, volIdx])[0];
+function pdfHtml(
+  src: PdfSrcResult,
+  dpc: DocPrecursor,
+  includeFrontmatter: boolean,
+  volIdx?: number,
+): Html {
+  const [chStartIdx, chEndIdx] = rangeFromVolIdx(dpc.paperbackSplits, volIdx);
+  const frontmatterHtml = includeFrontmatter ? frontmatter(dpc, src, volIdx) : ``;
+  const bodyHtml = src.mergedChapterHtml(chStartIdx, chEndIdx);
+  return frontmatterHtml + bodyHtml;
 }
 
-const addFirstChapterClass: HtmlStep = ([html, dpc, conf, volIdx]) => {
-  return [
-    html.replace(`<div class="sect1`, `<div class="sect1 first-chapter`),
-    dpc,
-    conf,
-    volIdx,
-  ];
-};
-
-const prependFrontmatter: HtmlStep = ([html, dpc, conf, volIdx]) => {
-  if (!conf.frontmatter) {
-    return [html, dpc, conf, volIdx];
-  }
-
-  const splitDpc = {
-    ...dpc,
-    sections: dpc.sections.filter(makeVolumeSplitFilter(dpc, volIdx)),
-  };
-
-  return [frontmatter(splitDpc, volIdx).concat(html), dpc, conf, volIdx];
-};
-
-const wrapHtml: HtmlStep = ([html, dpc, conf, volIdx]) => {
-  const { abbrev } = getPrintSizeDetails(conf.printSize || `m`);
-  const wrapped = wrapHtmlBody(html, {
+function wrapHtml(html: Html, dpc: DocPrecursor, printSize: PrintSize): Html {
+  const { abbrev } = getPrintSizeDetails(printSize);
+  return wrapHtmlBody(html, {
     title: dpc.meta.title,
     css: [`doc.css`],
     bodyClass: `body trim--${abbrev}`,
     htmlAttrs: `lang="${dpc.lang}"`,
   });
-  return [wrapped, dpc, conf, volIdx];
-};
+}

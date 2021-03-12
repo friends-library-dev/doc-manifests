@@ -1,47 +1,28 @@
 import { webPdf as css } from '@friends-library/doc-css';
-import flow from 'lodash/flow';
 import { DocPrecursor, Html, FileManifest } from '@friends-library/types';
-import { removeMobi7Tags } from '@friends-library/doc-html';
-import wrapHtmlBody from '../wrap-html';
-import {
-  lineSvgMarkup,
-  joinSections,
-  inlineNotes,
-  HtmlStep,
-  HtmlStepConfig,
-} from '../pdf-shared';
-import { html as evalHtml } from '../../../evaluator/dist';
+import wrapHtmlBody from '../utils';
+import { lineSvgMarkup } from '../pdf-shared';
+import { evaluate as eval } from '../../../evaluator/dist';
+import { getCustomCss } from '../custom-css';
 
 export default async function webPdfManifests(
   dpc: DocPrecursor,
 ): Promise<FileManifest[]> {
-  const conf = { frontmatter: false, condense: false, allowSplits: false };
-  const { chapters } = evalHtml(dpc);
-  const mannys = [
+  const result = eval.toPdfSrcHtml(dpc);
+  return [
     {
-      'doc.html': wrapHtml([chapters.join(``), dpc, conf])[0],
-      'doc.css': css({ runningHeadTitle: `roflcopter` }),
+      'doc.html': wrapHtml(result.mergedChapterHtml(), dpc),
+      'doc.css': css({ customCss: getCustomCss(dpc.customCode.css, `web-pdf`) }),
       'line.svg': lineSvgMarkup(),
     },
   ];
-  return mannys;
 }
 
-function html(dpc: DocPrecursor, conf: HtmlStepConfig, volIdx?: number): Html {
-  return flow([
-    joinSections,
-    inlineNotes,
-    ([html, d, c, i]) => [removeMobi7Tags(html), d, c, i],
-    wrapHtml,
-  ])([``, dpc, conf, volIdx])[0];
-}
-
-const wrapHtml: HtmlStep = ([html, dpc, conf, volIdx]) => {
-  const wrapped = wrapHtmlBody(html, {
+function wrapHtml(inner: Html, dpc: DocPrecursor): Html {
+  return wrapHtmlBody(inner, {
     title: dpc.meta.title,
     css: [`doc.css`],
     bodyClass: `body`,
     htmlAttrs: `lang="${dpc.lang}"`,
   });
-  return [wrapped, dpc, conf, volIdx];
-};
+}

@@ -8,7 +8,7 @@ import {
   DocPrecursor,
 } from '@friends-library/types';
 import { PrintPdf, css } from '@friends-library/cover-component';
-import wrapHtmlBody from '../wrap-html';
+import wrapHtmlBody from '../utils';
 import { addVolumeSuffix } from '../faux-volumes';
 
 export default async function paperbackCover(
