@@ -7,7 +7,7 @@ function frontmatter(
   src: EbookSrcResult,
   target: 'mobi' | 'epub',
 ): FileManifest {
-  const fm = commonFrontmatter(dpc);
+  const fm = commonFrontmatter(dpc, src);
   fm[`half-title`] = `<div class="half-title-page">${fm[`half-title`]}</div>`;
 
   if (src.hasFootnotes) {

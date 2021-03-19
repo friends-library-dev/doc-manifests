@@ -9,14 +9,14 @@ import {
 import { capitalizeTitle, ucfirst } from './utils';
 import { htmlTitle } from '@friends-library/adoc-convert';
 import { addVolumeSuffix } from './faux-volumes';
+import HtmlSrcResult from '../../evaluator/dist/html/result/HtmlSrcResult';
 
-export function frontmatter(dpc: DocPrecursor): FileManifest {
+export function frontmatter(dpc: DocPrecursor, src: HtmlSrcResult): FileManifest {
   const files = {
     'half-title': halfTitle(dpc),
     'original-title': originalTitle(dpc),
     copyright: copyright(dpc),
-    // TODO: reimplment
-    // epigraph: epigraph(dpc),
+    epigraph: src.epigraphHtml,
   };
   return pickBy(files, (html) => html !== ``);
 }
