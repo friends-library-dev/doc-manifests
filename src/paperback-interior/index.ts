@@ -10,7 +10,7 @@ import { getPrintSizeDetails } from '@friends-library/lulu';
 import wrapHtmlBody from '../utils';
 import frontmatter from './frontmatter';
 import { lineSvgMarkup, runningHead } from '../pdf-shared';
-import { evaluate as eval, PdfSrcResult } from '../../../evaluator/dist';
+import { evaluate as eval, PdfSrcResult } from '@friends-library/evaluator';
 import { getCustomCss } from '../custom-css';
 import { rangeFromVolIdx } from '../faux-volumes';
 

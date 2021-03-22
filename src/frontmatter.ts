@@ -6,10 +6,10 @@ import {
   DocPrecursor,
   FileManifest,
 } from '@friends-library/types';
+import { htmlTitle } from '@friends-library/adoc-utils';
+import { HtmlSrcResult } from '@friends-library/evaluator';
 import { capitalizeTitle, ucfirst } from './utils';
-import { htmlTitle } from '@friends-library/adoc-convert';
 import { addVolumeSuffix } from './faux-volumes';
-import HtmlSrcResult from '../../evaluator/dist/html/result/HtmlSrcResult';
 
 export function frontmatter(dpc: DocPrecursor, src: HtmlSrcResult): FileManifest {
   const files = {

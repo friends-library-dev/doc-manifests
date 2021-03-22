@@ -1,6 +1,6 @@
 import { Html, DocPrecursor, FileManifest, Lang } from '@friends-library/types';
 import { frontmatter as commonFrontmatter } from '../frontmatter';
-import { ChapterResult, EbookSrcResult } from '../../../evaluator/dist';
+import { ChapterResult, EbookSrcResult } from '@friends-library/evaluator';
 
 function frontmatter(
   dpc: DocPrecursor,

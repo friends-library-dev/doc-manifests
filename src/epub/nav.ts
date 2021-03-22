@@ -1,5 +1,5 @@
 import { Html, DocPrecursor, EbookConfig, Lang } from '@friends-library/types';
-import { EbookSrcResult } from '../../../evaluator/dist';
+import { EbookSrcResult } from '@friends-library/evaluator';
 
 interface TocItem {
   href: string;

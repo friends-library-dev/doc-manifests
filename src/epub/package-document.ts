@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { Xml, DocPrecursor, EbookConfig } from '@friends-library/types';
 import ebookFrontmatter from './frontmatter';
-import { EbookSrcResult } from '../../../evaluator/dist';
+import { EbookSrcResult } from '@friends-library/evaluator';
 
 export function packageDocument(
   dpc: DocPrecursor,
@@ -23,7 +23,6 @@ export function packageDocument(
   const publisher =
     lang === `en` ? `The Friends Library` : `La Biblioteca de los Amigios`;
 
-  // TODO: english hardcoded strings below: "Religious Society of Friends", "Public Domain" ...etc
   return `
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id">
@@ -35,9 +34,15 @@ export function packageDocument(
   <dc:title id="pub-title">${title}${randomize ? `` : randomizer}</dc:title>
   <dc:creator id="author">${isCompilation ? publisher : name}</dc:creator>
   <dc:publisher>${publisher}</dc:publisher>
-  <dc:subject>Quakers</dc:subject>
-  <dc:subject>Religious Society of Friends</dc:subject>
-  <dc:rights>Public domain in the USA.</dc:rights>
+  <dc:subject>${lang === `en` ? `Quakers` : `Cuáqueros`}</dc:subject>
+  <dc:subject>${
+    lang === `en` ? `Religious Society of Friends` : `La Sociedad de Amigos (Cuáqueros)`
+  }</dc:subject>
+  <dc:rights>${
+    lang === `en`
+      ? `Public domain in the USA.`
+      : `Dominio público en los Estados Unidos de América`
+  }</dc:rights>
   ${isCompilation ? `` : `<meta property="file-as" refines="#author">${nameSort}</meta>`}
   <meta property="dcterms:modified">${modified}</meta>
   ${conf.coverImg ? `<meta name="cover" content="cover-img" />` : ``}

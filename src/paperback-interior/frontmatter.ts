@@ -5,7 +5,7 @@ import {
 } from '../frontmatter';
 import { DocPrecursor, Html, Lang } from '@friends-library/types';
 import { toRoman } from 'roman-numerals';
-import { PdfSrcResult, ChapterResult } from '../../../evaluator/dist';
+import { PdfSrcResult, ChapterResult } from '@friends-library/evaluator';
 
 export default function frontmatter(
   dpc: DocPrecursor,
@@ -60,10 +60,10 @@ function multiColTocEntry(chapter: ChapterResult): Html {
     <p class="multicol-toc-entry">
       <a href="#${chapter.id}">
         <span class="multicol-toc-chapter">
-          ${splittable ? toRoman(chapter.sequenceNumber ?? 1) : ''}
+          ${splittable ? toRoman(chapter.sequenceNumber ?? 1) : ``}
         </span>
         <span class="multicol-toc-main">
-          ${splittable ? chapter.nonSequenceTitle : chapter.shortHeading}
+          ${chapter.shortHeading}
         </span>
       </a>
     </p>

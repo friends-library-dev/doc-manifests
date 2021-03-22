@@ -4,7 +4,7 @@ export function getCustomCss(
   customCss: DocPrecursor['customCode']['css'],
   type: ArtifactType,
 ): Css | undefined {
-  let cssChunks = [customCss.all ?? ``];
+  const cssChunks = [customCss.all ?? ``];
 
   if ([`paperback-interior`, `web-pdf`].includes(type) && customCss.pdf !== undefined) {
     cssChunks.push(customCss.pdf);

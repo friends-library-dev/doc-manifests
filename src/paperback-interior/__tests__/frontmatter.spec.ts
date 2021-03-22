@@ -1,5 +1,5 @@
+import { ChapterResult } from '@friends-library/evaluator';
 import { useMultiColLayout } from '../frontmatter';
-import { ChapterResult } from '../../../../evaluator/dist';
 
 describe(`useMultiColLayout()`, () => {
   const BARE_TITLE = new ChapterResult(0, ``, `Preface`, false, undefined, `Preface`);
