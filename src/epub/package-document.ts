@@ -1,8 +1,13 @@
 import moment from 'moment';
 import { Xml, DocPrecursor, EbookConfig } from '@friends-library/types';
+import { EbookSrcResult } from '@friends-library/evaluator';
 import ebookFrontmatter from './frontmatter';
 
-export function packageDocument(dpc: DocPrecursor, conf: EbookConfig): Xml {
+export function packageDocument(
+  dpc: DocPrecursor,
+  conf: EbookConfig,
+  src: EbookSrcResult,
+): Xml {
   const {
     lang,
     isCompilation,
@@ -29,20 +34,26 @@ export function packageDocument(dpc: DocPrecursor, conf: EbookConfig): Xml {
   <dc:title id="pub-title">${title}${randomize ? `` : randomizer}</dc:title>
   <dc:creator id="author">${isCompilation ? publisher : name}</dc:creator>
   <dc:publisher>${publisher}</dc:publisher>
-  <dc:subject>Quakers</dc:subject>
-  <dc:subject>Religious Society of Friends</dc:subject>
-  <dc:rights>Public domain in the USA.</dc:rights>
+  <dc:subject>${lang === `en` ? `Quakers` : `Cuáqueros`}</dc:subject>
+  <dc:subject>${
+    lang === `en` ? `Religious Society of Friends` : `La Sociedad de Amigos (Cuáqueros)`
+  }</dc:subject>
+  <dc:rights>${
+    lang === `en`
+      ? `Public domain in the USA.`
+      : `Dominio público en los Estados Unidos de América`
+  }</dc:rights>
   ${isCompilation ? `` : `<meta property="file-as" refines="#author">${nameSort}</meta>`}
   <meta property="dcterms:modified">${modified}</meta>
   ${conf.coverImg ? `<meta name="cover" content="cover-img" />` : ``}
 </metadata>
 <manifest>
-  ${[...manifestItems(dpc, conf)]
+  ${[...manifestItems(dpc, conf, src)]
     .map(([id, data]) => `<item id="${id}" ${attrs(data)}/>`)
     .join(`\n  `)}
 </manifest>
 <spine>
-  ${spineItems(dpc, conf)
+  ${spineItems(dpc, conf, src)
     .map((id) => `<itemref idref="${id}"/>`)
     .join(`\n  `)}
 </spine>
@@ -65,8 +76,11 @@ interface Item {
   properties?: string;
 }
 
-export function manifestItems(dpc: DocPrecursor, conf: EbookConfig): Map<string, Item> {
-  const { sections, notes } = dpc;
+export function manifestItems(
+  dpc: DocPrecursor,
+  conf: EbookConfig,
+  src: EbookSrcResult,
+): Map<string, Item> {
   const items = new Map<string, Item>();
 
   items.set(`css`, {
@@ -93,21 +107,22 @@ export function manifestItems(dpc: DocPrecursor, conf: EbookConfig): Map<string,
     properties: `nav`,
   });
 
-  sections.forEach(({ id }) => {
+  for (let num = 1; num <= src.numChapters; num++) {
+    const id = `chapter-${num}`;
     items.set(id, {
       href: `${id}.xhtml`,
       'media-type': `application/xhtml+xml`,
     });
-  });
+  }
 
-  if (notes.size) {
+  if (src.hasFootnotes) {
     items.set(`notes`, {
       href: `notes.xhtml`,
       'media-type': `application/xhtml+xml`,
     });
   }
 
-  Object.keys(ebookFrontmatter(dpc, conf.subType)).forEach((slug) =>
+  Object.keys(ebookFrontmatter(dpc, src, conf.subType)).forEach((slug) =>
     items.set(slug, {
       href: `${slug}.xhtml`,
       'media-type': `application/xhtml+xml`,
@@ -117,12 +132,19 @@ export function manifestItems(dpc: DocPrecursor, conf: EbookConfig): Map<string,
   return items;
 }
 
-export function spineItems(dpc: DocPrecursor, conf: EbookConfig): string[] {
-  const { sections, notes } = dpc;
-  let items = Object.keys(ebookFrontmatter(dpc, conf.subType));
-  items = items.concat(sections.map((section) => section.id));
+export function spineItems(
+  dpc: DocPrecursor,
+  conf: EbookConfig,
+  src: EbookSrcResult,
+): string[] {
+  let items = Object.keys(ebookFrontmatter(dpc, src, conf.subType));
+  items = items.concat(
+    src.chapters.map((_, idx) => {
+      return `chapter-${idx + 1}`;
+    }),
+  );
 
-  if (notes.size) {
+  if (src.hasFootnotes) {
     items.push(`notes`);
   }
 

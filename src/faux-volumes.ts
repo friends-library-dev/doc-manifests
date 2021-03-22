@@ -6,3 +6,17 @@ export function addVolumeSuffix(str: string, volIdx?: number): string {
   }
   return str;
 }
+
+export function rangeFromVolIdx(
+  splits: number[],
+  volIdx?: number,
+): [startIdx: number, endIdx: number] {
+  if (typeof volIdx !== `number`) {
+    return [0, Infinity];
+  }
+
+  const startIdx = (splits[volIdx - 1] || 1) - 1;
+  const endIdx = splits[volIdx] || Infinity;
+
+  return [startIdx, endIdx];
+}

@@ -1,12 +1,12 @@
 import mapValues from 'lodash/mapValues';
 import { DocPrecursor, EbookConfig, FileManifest } from '@friends-library/types';
-import ebook from '../ebook';
+import epub from '../epub';
 
 export default async function mobi(
   dpc: DocPrecursor,
   conf: EbookConfig,
 ): Promise<FileManifest[]> {
-  const ebookManifests = await ebook(dpc, conf);
+  const ebookManifests = await epub(dpc, conf);
   return mobiFromEbook(ebookManifests);
 }
 

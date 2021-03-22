@@ -1,85 +1,82 @@
+import { toRoman } from 'roman-numerals';
 import {
+  originalTitle as commonOriginalTitle,
   copyright as commonCopyright,
   halfTitle as commonHalfTitle,
 } from '../frontmatter';
-import { navText, epigraph } from '@friends-library/doc-html';
-import { DocPrecursor, Html, DocSection, Heading } from '@friends-library/types';
-import { toRoman } from 'roman-numerals';
+import { DocPrecursor, Html, Lang } from '@friends-library/types';
+import { PdfSrcResult, ChapterResult } from '@friends-library/evaluator';
 
-export default function frontmatter(dpc: DocPrecursor, volIdx?: number): Html {
+export default function frontmatter(
+  dpc: DocPrecursor,
+  src: PdfSrcResult,
+  volIdx?: number,
+): Html {
   const isFirstOrOnlyVolume = typeof volIdx !== `number` || volIdx === 0;
   return `
     ${halfTitle(dpc, volIdx)}
     ${isFirstOrOnlyVolume ? originalTitle(dpc) : ``}
     ${copyright(dpc)}
-    ${isFirstOrOnlyVolume ? epigraph(dpc) : ``}
-    ${toc(dpc)}
+    ${isFirstOrOnlyVolume ? src.epigraphHtml : ``}
+    ${toc(src, dpc.lang)}
   `;
 }
 
-function toc({ lang, sections }: DocPrecursor): Html {
-  if (sections.length <= 3) {
+function toc(src: PdfSrcResult, lang: Lang): Html {
+  if (src.numChapters <= 3) {
     return ``;
   }
+  const toEntry = useMultiColLayout(src.chapters) ? multiColTocEntry : tocEntry;
   return `
     <div class="toc own-page">
       <h1>${lang === `en` ? `Contents` : `Índice`}</h1>
-      ${sections
-        .map(useMultiColLayout(sections) ? multiColTocEntry : tocEntry)
-        .join(`\n      `)}
+      ${src.chapters.map(toEntry).join(`\n`)}
     </div>
   `;
 }
 
-export function useMultiColLayout(
-  sections: { heading: Omit<Heading, 'id'>; isIntermediateTitle?: boolean }[],
-): boolean {
-  const regularSections = sections.filter((s) => !s.isIntermediateTitle);
-  const headings = regularSections.map((s) => s.heading);
-  const namedChapterHeadings = headings.filter((h) => h.text && h.sequence);
-  return namedChapterHeadings.length / headings.length > 0.45;
+export function useMultiColLayout(chapters: ChapterResult[]): boolean {
+  // keep only chapters with headings like `"Chapter IV. The Lambs War"`
+  // which, when they predominate, make the multi-col layout desirable
+  const numberedAndNamedChapters = chapters.filter(
+    (c) => !c.isIntermediateTitle && c.isSequenced && c.hasNonSequenceTitle,
+  );
+  const nonItermediateChapters = chapters.filter((c) => !c.isIntermediateTitle);
+  return numberedAndNamedChapters.length / nonItermediateChapters.length > 0.45;
 }
 
-function multiColTocEntry({
-  heading,
-  isIntermediateTitle,
-}: Pick<DocSection, 'heading' | 'isIntermediateTitle'>): Html {
-  if (isIntermediateTitle) {
-    return tocEntry({ heading, isIntermediateTitle });
+function multiColTocEntry(chapter: ChapterResult): Html {
+  if (chapter.isIntermediateTitle) {
+    return tocEntry(chapter);
   }
+
+  // if we have a sequence (chapter) number, and a non-sequence title
+  // we split the chapter number left, and non-sequence title right
+  // otherwise, everything goes on right
+  const splittable =
+    typeof chapter.sequenceNumber === `number` && chapter.hasNonSequenceTitle;
 
   return `
     <p class="multicol-toc-entry">
-      <a href="#${heading.id || ``}">
+      <a href="#${chapter.id}">
         <span class="multicol-toc-chapter">
-          ${
-            heading.sequence?.number && heading.text
-              ? `${toRoman(heading.sequence.number)}.`
-              : ``
-          }
+          ${splittable ? toRoman(chapter.sequenceNumber ?? 1) : ``}
         </span>
         <span class="multicol-toc-main">
-          ${navText({
-            ...heading,
-            sequence: heading.text ? undefined : heading.sequence,
-          })}
+          ${chapter.shortHeading}
         </span>
       </a>
     </p>
     `.trim();
 }
 
-function tocEntry({
-  heading,
-  isIntermediateTitle,
-}: Pick<DocSection, 'heading' | 'isIntermediateTitle'>): Html {
+function tocEntry(chapter: ChapterResult): Html {
   return `
-    <p${isIntermediateTitle ? ` class="toc-intermediate-title"` : ``}>
-      <a href="#${heading.id || ``}">
-        <span>${navText(heading)}</span>
+    <p${chapter.isIntermediateTitle ? ` class="toc-intermediate-title"` : ``}>
+      <a href="#${chapter.id}">
+        <span>${chapter.shortHeading}</span>
       </a>
-    </p>
-    `.trim();
+    </p>`;
 }
 
 function copyright(dpc: DocPrecursor): Html {
@@ -99,20 +96,13 @@ function halfTitle(dpc: DocPrecursor, volIdx?: number): Html {
   `;
 }
 
-function originalTitle({ meta }: DocPrecursor): Html {
-  if (!meta.originalTitle) {
+function originalTitle(dpc: DocPrecursor): Html {
+  if (!dpc.meta.originalTitle) {
     return ``;
   }
 
   return `
     <div class="blank-page own-page"></div>
-    <div class="original-title-page own-page">
-      <p class="originally-titled__label">
-        Original title:
-      </p>
-      <p class="originally-titled__title">
-        ${meta.originalTitle}
-      </p>
-    </div>
+    ${commonOriginalTitle(dpc)}
   `;
 }

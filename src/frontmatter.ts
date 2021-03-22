@@ -1,26 +1,25 @@
 import moment from 'moment';
-import { memoize, pickBy } from 'lodash';
+import { pickBy } from 'lodash';
 import {
   HTML_DEC_ENTITIES,
   Html,
   DocPrecursor,
   FileManifest,
 } from '@friends-library/types';
-import { capitalizeTitle, ucfirst, br7, epigraph } from '@friends-library/doc-html';
-import { htmlTitle } from '@friends-library/adoc-convert';
+import { htmlTitle } from '@friends-library/adoc-utils';
+import { HtmlSrcResult } from '@friends-library/evaluator';
+import { capitalizeTitle, ucfirst } from './utils';
 import { addVolumeSuffix } from './faux-volumes';
 
-export const frontmatter = memoize(
-  (dpc: DocPrecursor): FileManifest => {
-    const files = {
-      'half-title': halfTitle(dpc),
-      'original-title': originalTitle(dpc),
-      copyright: copyright(dpc),
-      epigraph: epigraph(dpc),
-    };
-    return pickBy(files, (html) => html !== ``);
-  },
-);
+export function frontmatter(dpc: DocPrecursor, src: HtmlSrcResult): FileManifest {
+  const files = {
+    'half-title': halfTitle(dpc),
+    'original-title': originalTitle(dpc),
+    copyright: copyright(dpc),
+    epigraph: src.epigraphHtml,
+  };
+  return pickBy(files, (html) => html !== ``);
+}
 
 export function halfTitle(dpc: DocPrecursor, volIdx?: number): Html {
   const {
@@ -40,19 +39,17 @@ export function halfTitle(dpc: DocPrecursor, volIdx?: number): Html {
   let markup = `<h1>${prettyTitle}</h1>`;
   const nameInTitle = title.indexOf(name) !== -1;
   if (!nameInTitle && !dpc.isCompilation) {
-    markup = `${markup}\n<p class="byline">${br7}${
-      lang === `en` ? `by` : `por`
-    } ${name}</p>`;
+    markup = `${markup}\n<p class="byline">${lang === `en` ? `by` : `por`} ${name}</p>`;
   }
 
   if (editor && lang === `en`) {
-    markup += `\n<p class="editor">${br7}${br7}${br7}Edited by ${editor}</p>`;
+    markup += `\n<p class="editor">Edited by ${editor}</p>`;
   }
 
   return markup;
 }
 
-function originalTitle({ meta, lang }: DocPrecursor): Html {
+export function originalTitle({ meta, lang }: DocPrecursor): Html {
   if (!meta.originalTitle) {
     return ``;
   }
@@ -61,8 +58,6 @@ function originalTitle({ meta, lang }: DocPrecursor): Html {
     <div class="original-title-page">
       <p class="originally-titled__label">
         Original title:
-        ${br7}
-        ${br7}
       </p>
       <p class="originally-titled__title">
         ${capitalizeTitle(meta.originalTitle, lang)}
