@@ -56,6 +56,11 @@ function multiColTocEntry(chapter: ChapterResult): Html {
   const splittable =
     typeof chapter.sequenceNumber === `number` && chapter.hasNonSequenceTitle;
 
+  let main = chapter.shortHeading;
+  if (chapter.nonSequenceTitle && chapter.nonSequenceTitle.length < main.length) {
+    main = chapter.nonSequenceTitle;
+  }
+
   return `
     <p class="multicol-toc-entry">
       <a href="#${chapter.id}">
@@ -63,7 +68,7 @@ function multiColTocEntry(chapter: ChapterResult): Html {
           ${splittable ? toRoman(chapter.sequenceNumber ?? 1) : ``}
         </span>
         <span class="multicol-toc-main">
-          ${chapter.shortHeading}
+          ${main}
         </span>
       </a>
     </p>
