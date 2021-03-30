@@ -40,7 +40,11 @@ export default async function paperbackInteriorManifests(
 
   return [...dpc.paperbackSplits, Infinity].map((_, volIdx) => {
     return {
-      'doc.html': pdfHtml(src, dpc, conf.frontmatter, volIdx),
+      'doc.html': wrapHtml(
+        pdfHtml(src, dpc, conf.frontmatter, volIdx),
+        dpc,
+        conf.printSize,
+      ),
       'doc.css': css,
       'line.svg': lineSvgMarkup(),
     };
