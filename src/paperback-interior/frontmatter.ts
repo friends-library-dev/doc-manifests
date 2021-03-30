@@ -4,8 +4,9 @@ import {
   copyright as commonCopyright,
   halfTitle as commonHalfTitle,
 } from '../frontmatter';
-import { DocPrecursor, Html, Lang } from '@friends-library/types';
+import { DocPrecursor, Html } from '@friends-library/types';
 import { PdfSrcResult, ChapterResult } from '@friends-library/evaluator';
+import { rangeFromVolIdx } from '../faux-volumes';
 
 export default function frontmatter(
   dpc: DocPrecursor,
@@ -18,19 +19,22 @@ export default function frontmatter(
     ${isFirstOrOnlyVolume ? originalTitle(dpc) : ``}
     ${copyright(dpc)}
     ${isFirstOrOnlyVolume ? src.epigraphHtml : ``}
-    ${toc(src, dpc.lang)}
+    ${toc(src, dpc, volIdx)}
   `;
 }
 
-function toc(src: PdfSrcResult, lang: Lang): Html {
+function toc(src: PdfSrcResult, dpc: DocPrecursor, volIdx?: number): Html {
   if (src.numChapters <= 3) {
     return ``;
   }
   const toEntry = useMultiColLayout(src.chapters) ? multiColTocEntry : tocEntry;
   return `
     <div class="toc own-page">
-      <h1>${lang === `en` ? `Contents` : `Índice`}</h1>
-      ${src.chapters.map(toEntry).join(`\n`)}
+      <h1>${dpc.lang === `en` ? `Contents` : `Índice`}</h1>
+      ${src.chapters
+        .slice(...rangeFromVolIdx(dpc.paperbackSplits, volIdx))
+        .map(toEntry)
+        .join(`\n`)}
     </div>
   `;
 }

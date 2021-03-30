@@ -15,7 +15,7 @@ export function rangeFromVolIdx(
     return [0, Infinity];
   }
 
-  const startIdx = (splits[volIdx - 1] || 1) - 1;
+  const startIdx = splits[volIdx - 1] || 0;
   const endIdx = splits[volIdx] || Infinity;
 
   return [startIdx, endIdx];
