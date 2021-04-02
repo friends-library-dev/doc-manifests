@@ -1,6 +1,6 @@
 {
   "name": "@friends-library/doc-manifests",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "create manifests for consumable artifacts from doc-precursors",
   "main": "./dist/index.js",
   "repository": "github:friends-library-dev/doc-manifests",
