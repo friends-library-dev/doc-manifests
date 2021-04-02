@@ -4,7 +4,7 @@ import { evaluate } from '@friends-library/evaluator';
 export default async function speech(dpc: DocPrecursor): Promise<FileManifest[]> {
   return [
     {
-      file: evaluate.toSpeechText(dpc),
+      file: evaluate.toSpeechHtml(dpc),
     },
   ];
 }
