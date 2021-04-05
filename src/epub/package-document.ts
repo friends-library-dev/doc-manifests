@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { Xml, DocPrecursor, EbookConfig } from '@friends-library/types';
 import { EbookSrcResult } from '@friends-library/evaluator';
+import { t, setLocale } from '@friends-library/locale';
 import ebookFrontmatter from './frontmatter';
 
 export function packageDocument(
@@ -17,11 +18,11 @@ export function packageDocument(
       title,
     },
   } = dpc;
+  setLocale(lang);
   const modified = moment.utc(moment.unix(timestamp)).format(`YYYY-MM-DDThh:mm:ss[Z]`);
-  const randomize = conf.randomizeForLocalTesting;
+  const randomize = conf.randomizeForLocalTesting === true;
   const randomizer = ` (${moment().format(`h:mm:ss`)})`;
-  const publisher =
-    lang === `en` ? `The Friends Library` : `La Biblioteca de los Amigios`;
+  const publisher = t`The Friends Library`;
 
   return `
 <?xml version="1.0" encoding="utf-8"?>
@@ -31,18 +32,12 @@ export function packageDocument(
   <dc:identifier id="pub-id">friends-library/${
     randomize ? Date.now() : `${dpc.documentId}/${dpc.editionType}`
   }</dc:identifier>
-  <dc:title id="pub-title">${title}${randomize ? `` : randomizer}</dc:title>
+  <dc:title id="pub-title">${title}${randomize ? randomizer : ``}</dc:title>
   <dc:creator id="author">${isCompilation ? publisher : name}</dc:creator>
   <dc:publisher>${publisher}</dc:publisher>
-  <dc:subject>${lang === `en` ? `Quakers` : `Cuáqueros`}</dc:subject>
-  <dc:subject>${
-    lang === `en` ? `Religious Society of Friends` : `La Sociedad de Amigos (Cuáqueros)`
-  }</dc:subject>
-  <dc:rights>${
-    lang === `en`
-      ? `Public domain in the USA.`
-      : `Dominio público en los Estados Unidos de América`
-  }</dc:rights>
+  <dc:subject>${t`Quakers`}</dc:subject>
+  <dc:subject>${t`Religious Society of Friends`}</dc:subject>
+  <dc:rights>${t`Public domain in the USA`}.</dc:rights>
   ${isCompilation ? `` : `<meta property="file-as" refines="#author">${nameSort}</meta>`}
   <meta property="dcterms:modified">${modified}</meta>
   ${conf.coverImg ? `<meta name="cover" content="cover-img" />` : ``}

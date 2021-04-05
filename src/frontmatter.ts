@@ -8,6 +8,7 @@ import {
 } from '@friends-library/types';
 import { htmlTitle } from '@friends-library/adoc-utils';
 import { HtmlSrcResult } from '@friends-library/evaluator';
+import { t, setLocale } from '@friends-library/locale';
 import { capitalizeTitle, ucfirst } from './utils';
 import { addVolumeSuffix } from './faux-volumes';
 
@@ -72,7 +73,9 @@ export function copyright(dpc: DocPrecursor): Html {
     revision: { timestamp, sha, url },
     meta: { published, isbn },
   } = dpc;
+  setLocale(lang);
   moment.locale(lang);
+
   let time = moment
     .utc(moment.unix(timestamp))
     .format(lang === `en` ? `MMMM Do, YYYY` : `D [de] MMMM, YYYY`);
@@ -84,42 +87,19 @@ export function copyright(dpc: DocPrecursor): Html {
       .join(` `);
   }
 
-  let t = {
-    publicDomain: `Public domain in the USA`,
-    publishedIn: `Originally published in`,
-    publisher: `Friends Library Publishing`,
-    domain: `friendslibrary.com`,
-    email: `info@friendslibrary.com`,
-    textRevision: `Text revision`,
-    createdBy: `Ebook created and freely distributed by`,
-    moreFreeBooks: `Find more free books from early Quakers at`,
-    contact: `Contact the publishers at`,
-  };
-
-  if (lang === `es`) {
-    t = {
-      publicDomain: `Dominio público en los Estados Unidos de América`,
-      publishedIn: `Publicado originalmente en`,
-      publisher: `La Biblioteca de los Amigos`,
-      domain: `bibliotecadelosamigos.org`,
-      email: `info@bibliotecadelosamigos.org`,
-      textRevision: `Revisión de texto`,
-      createdBy: `Creado y distribuido gratuitamente por`,
-      moreFreeBooks: `Encuentre más libros gratis de los primeros Cuáqueros en`,
-      contact: `Puede contactarnos en`,
-    };
-  }
+  const webUrl = `https://www.${t`friendslibrary.com`}`;
+  const email = t`info@friendslibrary.com`;
 
   return `
   <div class="copyright-page">
     <ul>
-      <li>${t.publicDomain}</li>
-      ${published ? `<li>${t.publishedIn} ${published}</li>` : ``}
+      <li>${t`Public domain in the USA`}</li>
+      ${published ? `<li>${t`Originally published in ${published}`}</li>` : ``}
       ${isbn ? `<li id="isbn">ISBN: <code>${isbn}</code></li>` : ``}
-      <li>${t.textRevision} <code><a href="${url}">${sha}</a></code> — ${time}</li>
-      <li>${t.createdBy} <a href="https://${t.domain}">${t.publisher}</a></li>
-      <li>${t.moreFreeBooks} <a href="https://${t.domain}">${t.domain}</a></li>
-      <li>${t.contact} <a href="mailto:${t.email}">${t.email}</a></li>
+      <li>${t`Text revision ${`<code><a href="${url}">${sha}</a></code> — ${time}`}`}</li>
+      <li>${t`Created and freely distributed by`} <a href="${webUrl}">${t`Friends Library Publishing`}</a></li>
+      <li>${t`Find more free books from early Quakers at`} <a href="${webUrl}">${t`friendslibrary.com`}</a></li>
+      <li>${t`Contact the publishers at`} <a href="mailto:${email}">${email}</a></li>
     </ul>
   </div>
   `;
