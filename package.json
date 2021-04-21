@@ -18,9 +18,9 @@
   "dependencies": {
     "@friends-library/adoc-utils": "^1.3.1",
     "@friends-library/cover-component": "^3.1.2",
-    "@friends-library/doc-css": "^2.0.2",
-    "@friends-library/evaluator": "^1.3.0",
-    "@friends-library/locale": "^1.5.0",
+    "@friends-library/doc-css": "^2.1.0",
+    "@friends-library/evaluator": "^1.4.0",
+    "@friends-library/locale": "^1.7.0",
     "@friends-library/types": "^4.1.0",
     "@types/react": "16.9.11",
     "@types/react-dom": "^16.9.0",
