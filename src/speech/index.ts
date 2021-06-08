@@ -2,9 +2,5 @@ import { DocPrecursor, FileManifest } from '@friends-library/types';
 import { evaluate } from '@friends-library/evaluator';
 
 export default async function speech(dpc: DocPrecursor): Promise<FileManifest[]> {
-  return [
-    {
-      file: evaluate.toSpeechHtml(dpc),
-    },
-  ];
+  return [{ file: evaluate.toSpeechHtml(dpc) }];
 }
