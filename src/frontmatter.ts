@@ -58,7 +58,7 @@ export function originalTitle({ meta, lang }: DocPrecursor): Html {
   return `
     <div class="original-title-page">
       <p class="originally-titled__label">
-        Original title:
+        ${t`Original title`}:
       </p>
       <p class="originally-titled__title">
         ${capitalizeTitle(meta.originalTitle, lang)}
