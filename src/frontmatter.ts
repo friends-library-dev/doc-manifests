@@ -55,6 +55,7 @@ export function originalTitle({ meta, lang }: DocPrecursor): Html {
     return ``;
   }
 
+  setLocale(lang);
   return `
     <div class="original-title-page">
       <p class="originally-titled__label">
