@@ -1,4 +1,4 @@
-import { Html, DocPrecursor, FileManifest, Lang } from '@friends-library/types';
+import { DocPrecursor, FileManifest, Lang } from '@friends-library/types';
 import { ChapterResult, EbookSrcResult } from '@friends-library/evaluator';
 import { frontmatter as commonFrontmatter } from '../frontmatter';
 
@@ -21,7 +21,7 @@ export default function frontmatter(
   return fm;
 }
 
-function contentToc(chapters: ChapterResult[], lang: Lang): Html {
+function contentToc(chapters: ChapterResult[], lang: Lang): string {
   return `
   <section class="content-toc">
     <h1>${lang === `en` ? `Table of Contents` : `Índice`}</h1>
@@ -29,7 +29,7 @@ function contentToc(chapters: ChapterResult[], lang: Lang): Html {
   </section>`;
 }
 
-function tocEntry(chapter: ChapterResult): Html {
+function tocEntry(chapter: ChapterResult): string {
   const short = chapter.shortHeading;
   return `
   <div>

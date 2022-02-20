@@ -1,7 +1,7 @@
-import { Html, Lang } from '@friends-library/types';
+import { Lang } from '@friends-library/types';
 
 export default function wrapHtmlBody(
-  bodyHtml: Html,
+  bodyHtml: string,
   opts: {
     htmlAttrs?: string;
     isUtf8?: boolean;
@@ -9,7 +9,7 @@ export default function wrapHtmlBody(
     title?: string;
     bodyClass?: string;
   } = {},
-): Html {
+): string {
   return `
     <!DOCTYPE html>
     <html${opts.htmlAttrs ? ` ${opts.htmlAttrs.trim()}` : ``}>

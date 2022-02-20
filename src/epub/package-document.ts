@@ -1,14 +1,15 @@
 import moment from 'moment';
-import { Xml, DocPrecursor, EbookConfig } from '@friends-library/types';
+import { DocPrecursor } from '@friends-library/types';
 import { EbookSrcResult } from '@friends-library/evaluator';
 import { t, setLocale } from '@friends-library/locale';
 import ebookFrontmatter from './frontmatter';
+import { EbookConfig } from '../types';
 
 export function packageDocument(
   dpc: DocPrecursor,
   conf: EbookConfig,
   src: EbookSrcResult,
-): Xml {
+): string {
   const {
     lang,
     isCompilation,
@@ -30,7 +31,7 @@ export function packageDocument(
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
   <dc:language id="pub-language">${lang}</dc:language>
   <dc:identifier id="pub-id">friends-library/${
-    randomize ? Date.now() : `${dpc.documentId}/${dpc.editionType}`
+    randomize ? Date.now() : dpc.editionId
   }</dc:identifier>
   <dc:title id="pub-title">${title}${randomize ? randomizer : ``}</dc:title>
   <dc:creator id="author">${isCompilation ? publisher : name}</dc:creator>

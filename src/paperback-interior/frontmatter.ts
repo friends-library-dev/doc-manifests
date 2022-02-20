@@ -4,7 +4,7 @@ import {
   copyright as commonCopyright,
   halfTitle as commonHalfTitle,
 } from '../frontmatter';
-import { DocPrecursor, Html } from '@friends-library/types';
+import { DocPrecursor } from '@friends-library/types';
 import { PdfSrcResult, ChapterResult } from '@friends-library/evaluator';
 import { rangeFromVolIdx } from '../faux-volumes';
 
@@ -12,7 +12,7 @@ export default function frontmatter(
   dpc: DocPrecursor,
   src: PdfSrcResult,
   volIdx?: number,
-): Html {
+): string {
   const isFirstOrOnlyVolume = typeof volIdx !== `number` || volIdx === 0;
   return `
     ${halfTitle(dpc, volIdx)}
@@ -23,7 +23,7 @@ export default function frontmatter(
   `;
 }
 
-function toc(src: PdfSrcResult, dpc: DocPrecursor, volIdx?: number): Html {
+function toc(src: PdfSrcResult, dpc: DocPrecursor, volIdx?: number): string {
   if (src.numChapters <= 3) {
     return ``;
   }
@@ -49,7 +49,7 @@ export function useMultiColLayout(chapters: ChapterResult[]): boolean {
   return numberedAndNamedChapters.length / nonItermediateChapters.length > 0.45;
 }
 
-function multiColTocEntry(chapter: ChapterResult): Html {
+function multiColTocEntry(chapter: ChapterResult): string {
   if (chapter.isIntermediateTitle) {
     return tocEntry(chapter);
   }
@@ -79,7 +79,7 @@ function multiColTocEntry(chapter: ChapterResult): Html {
     `.trim();
 }
 
-function tocEntry(chapter: ChapterResult): Html {
+function tocEntry(chapter: ChapterResult): string {
   return `
     <p${chapter.isIntermediateTitle ? ` class="toc-intermediate-title"` : ``}>
       <a href="#${chapter.id}">
@@ -88,14 +88,14 @@ function tocEntry(chapter: ChapterResult): Html {
     </p>`;
 }
 
-function copyright(dpc: DocPrecursor): Html {
+function copyright(dpc: DocPrecursor): string {
   return commonCopyright(dpc)
     .replace(`copyright-page`, `copyright-page own-page`)
     .replace(`Ebook created`, `Created`)
     .replace(/([^@])friendslibrary\.com/g, `$1www.friendslibrary.com`);
 }
 
-function halfTitle(dpc: DocPrecursor, volIdx?: number): Html {
+function halfTitle(dpc: DocPrecursor, volIdx?: number): string {
   return `
     <div class="half-title-page own-page">
       <div>
@@ -105,7 +105,7 @@ function halfTitle(dpc: DocPrecursor, volIdx?: number): Html {
   `;
 }
 
-function originalTitle(dpc: DocPrecursor): Html {
+function originalTitle(dpc: DocPrecursor): string {
   if (!dpc.meta.originalTitle) {
     return ``;
   }

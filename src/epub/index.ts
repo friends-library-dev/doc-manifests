@@ -1,11 +1,4 @@
-import {
-  Xml,
-  DocPrecursor,
-  EbookConfig,
-  FileManifest,
-  Html,
-  Lang,
-} from '@friends-library/types';
+import { DocPrecursor, FileManifest, Lang } from '@friends-library/types';
 import { mobi as mobiCss, epub as epubCss } from '@friends-library/doc-css';
 import { evaluate as eval, EbookSrcResult } from '@friends-library/evaluator';
 import { packageDocument } from './package-document';
@@ -13,6 +6,7 @@ import wrapHtmlBody from '../utils';
 import { nav } from './nav';
 import ebookFrontmatter from './frontmatter';
 import { getCustomCss } from '../custom-css';
+import { EbookConfig } from '../types';
 
 export default async function ebook(
   dpc: DocPrecursor,
@@ -48,7 +42,7 @@ function coverFiles(dpc: DocPrecursor, coverImg?: Buffer): FileManifest {
   };
 }
 
-function container(): Xml {
+function container(): string {
   return `
 <?xml version="1.0" encoding="UTF-8"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
@@ -59,7 +53,7 @@ function container(): Xml {
   `.trim();
 }
 
-function wrapEbookBodyHtml(bodyHtml: Html, lang: Lang, bodyClass?: string): Html {
+function wrapEbookBodyHtml(bodyHtml: string, lang: Lang, bodyClass?: string): string {
   return wrapHtmlBody(bodyHtml, {
     htmlAttrs: `xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="${lang}" lang="${lang}"`,
     css: [`style.css`],
@@ -68,15 +62,15 @@ function wrapEbookBodyHtml(bodyHtml: Html, lang: Lang, bodyClass?: string): Html
   });
 }
 
-function sectionFiles(src: EbookSrcResult, lang: Lang): Record<string, Html> {
-  const files: Record<string, Html> = {};
+function sectionFiles(src: EbookSrcResult, lang: Lang): Record<string, string> {
+  const files: Record<string, string> = {};
   src.chapters.forEach(({ content: html }, index) => {
     files[`OEBPS/chapter-${index + 1}.xhtml`] = wrapEbookBodyHtml(html, lang);
   });
   return files;
 }
 
-function notesFile(src: EbookSrcResult, lang: Lang): Record<string, Html> {
+function notesFile(src: EbookSrcResult, lang: Lang): Record<string, string> {
   if (!src.hasFootnotes) {
     return {};
   }
@@ -89,12 +83,12 @@ function frontmatterFiles(
   dpc: DocPrecursor,
   conf: EbookConfig,
   src: EbookSrcResult,
-): Record<string, Html> {
+): Record<string, string> {
   return Object.entries(ebookFrontmatter(dpc, src, conf.subType)).reduce(
     (files, [slug, html]) => {
       files[`OEBPS/${slug}.xhtml`] = wrapEbookBodyHtml(String(html), dpc.lang);
       return files;
     },
-    {} as Record<string, Html>,
+    {} as Record<string, string>,
   );
 }

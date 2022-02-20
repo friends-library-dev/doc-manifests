@@ -5,7 +5,7 @@ exports[`packageDocument() outputs correct string (English) 1`] = `
 <package xmlns=\\"http://www.idpf.org/2007/opf\\" version=\\"3.0\\" unique-identifier=\\"pub-id\\">
 <metadata xmlns:dc=\\"http://purl.org/dc/elements/1.1/\\">
   <dc:language id=\\"pub-language\\">en</dc:language>
-  <dc:identifier id=\\"pub-id\\">friends-library/9414033c-4b70-4b4b-8e48-fec037822173/original</dc:identifier>
+  <dc:identifier id=\\"pub-id\\">friends-library/9414033c-4b70-4b4b-8e48-fec037822173</dc:identifier>
   <dc:title id=\\"pub-title\\">Journal of George Fox</dc:title>
   <dc:creator id=\\"author\\">George Fox</dc:creator>
   <dc:publisher>The Friends Library</dc:publisher>
@@ -36,7 +36,7 @@ exports[`packageDocument() outputs correct string (Spanish) 1`] = `
 <package xmlns=\\"http://www.idpf.org/2007/opf\\" version=\\"3.0\\" unique-identifier=\\"pub-id\\">
 <metadata xmlns:dc=\\"http://purl.org/dc/elements/1.1/\\">
   <dc:language id=\\"pub-language\\">es</dc:language>
-  <dc:identifier id=\\"pub-id\\">friends-library/9414033c-4b70-4b4b-8e48-fec037822173/original</dc:identifier>
+  <dc:identifier id=\\"pub-id\\">friends-library/9414033c-4b70-4b4b-8e48-fec037822173</dc:identifier>
   <dc:title id=\\"pub-title\\">Journal of George Fox</dc:title>
   <dc:creator id=\\"author\\">George Fox</dc:creator>
   <dc:publisher>La Biblioteca de los Amigos</dc:publisher>

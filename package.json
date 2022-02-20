@@ -17,13 +17,13 @@
     "npub:precheck": "fldev ci"
   },
   "dependencies": {
-    "@friends-library/adoc-utils": "^1.3.2",
-    "@friends-library/cover-component": "^3.1.5",
-    "@friends-library/doc-css": "^2.4.0",
-    "@friends-library/evaluator": "^1.4.2",
+    "@friends-library/adoc-utils": "^2.0.1",
+    "@friends-library/cover-component": "^3.1.6",
+    "@friends-library/doc-css": "^2.5.2",
+    "@friends-library/evaluator": "^1.4.5",
     "@friends-library/locale": "^2.1.0",
-    "@friends-library/lulu": "^1.3.1",
-    "@friends-library/types": "^6.0.0",
+    "@friends-library/lulu": "^2.0.1",
+    "@friends-library/types": "^7.0.0",
     "@types/react": "16.9.11",
     "@types/react-dom": "^16.9.0",
     "lodash.mapvalues": "^4.6.0",
@@ -36,7 +36,7 @@
     "x-ts-utils": "^1.2.0"
   },
   "devDependencies": {
-    "@friends-library/dev": "~4.4.1",
+    "@friends-library/dev": "~4.5.1",
     "@types/lodash.mapvalues": "^4.6.6",
     "@types/lodash.pickby": "^4.6.6",
     "@types/roman-numerals": "^0.3.0"

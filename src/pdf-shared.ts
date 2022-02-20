@@ -1,4 +1,4 @@
-import { Xml, DocPrecursor } from '@friends-library/types';
+import { DocPrecursor } from '@friends-library/types';
 import { utf8ShortTitle } from '@friends-library/adoc-utils';
 
 export function runningHead(
@@ -10,6 +10,6 @@ export function runningHead(
   return utf8ShortTitle(title);
 }
 
-export function lineSvgMarkup(): Xml {
+export function lineSvgMarkup(): string {
   return `<svg height="1px" width="88px" version="1.1" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="88" y2="0" style="stroke:rgb(0,0,0);stroke-width:1" /></svg>`;
 }

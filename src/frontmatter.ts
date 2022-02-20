@@ -1,11 +1,6 @@
 import moment from 'moment';
 import { pickBy } from 'lodash';
-import {
-  HTML_DEC_ENTITIES,
-  Html,
-  DocPrecursor,
-  FileManifest,
-} from '@friends-library/types';
+import { HTML_DEC_ENTITIES, DocPrecursor, FileManifest } from '@friends-library/types';
 import { htmlTitle } from '@friends-library/adoc-utils';
 import { HtmlSrcResult } from '@friends-library/evaluator';
 import { t, setLocale } from '@friends-library/locale';
@@ -22,7 +17,7 @@ export function frontmatter(dpc: DocPrecursor, src: HtmlSrcResult): FileManifest
   return pickBy(files, (html) => html !== ``);
 }
 
-export function halfTitle(dpc: DocPrecursor, volIdx?: number): Html {
+export function halfTitle(dpc: DocPrecursor, volIdx?: number): string {
   const {
     lang,
     meta: {
@@ -50,7 +45,7 @@ export function halfTitle(dpc: DocPrecursor, volIdx?: number): Html {
   return markup;
 }
 
-export function originalTitle({ meta, lang }: DocPrecursor): Html {
+export function originalTitle({ meta, lang }: DocPrecursor): string {
   if (!meta.originalTitle) {
     return ``;
   }
@@ -68,7 +63,7 @@ export function originalTitle({ meta, lang }: DocPrecursor): Html {
   `;
 }
 
-export function copyright(dpc: DocPrecursor): Html {
+export function copyright(dpc: DocPrecursor): string {
   const {
     lang,
     revision: { timestamp, sha, url },

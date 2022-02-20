@@ -1,5 +1,6 @@
-import { Html, DocPrecursor, EbookConfig, Lang } from '@friends-library/types';
+import { DocPrecursor, Lang } from '@friends-library/types';
 import { EbookSrcResult } from '@friends-library/evaluator';
+import { EbookConfig } from '../types';
 
 interface TocItem {
   href: string;
@@ -13,7 +14,7 @@ interface Landmark {
   text: string;
 }
 
-export function nav(dpc: DocPrecursor, conf: EbookConfig, src: EbookSrcResult): Html {
+export function nav(dpc: DocPrecursor, conf: EbookConfig, src: EbookSrcResult): string {
   if (src.numChapters === 1) {
     return `<nav epub:type="toc" id="toc"><ol></ol></nav>`;
   }
@@ -32,12 +33,12 @@ export function nav(dpc: DocPrecursor, conf: EbookConfig, src: EbookSrcResult): 
     </nav>`;
 }
 
-function tocItemMarkup(item: TocItem): Html {
+function tocItemMarkup(item: TocItem): string {
   const hidden = item.hidden ? ` hidden=""` : ``;
   return `<li${hidden}><a href="${item.href}">${item.text}</a></li>`;
 }
 
-function landmarkItemMarkup(item: Landmark): Html {
+function landmarkItemMarkup(item: Landmark): string {
   return `<li><a href="${item.href}" epub:type="${item.type}">${item.text}</a></li>`;
 }
 

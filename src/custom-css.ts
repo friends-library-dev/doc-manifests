@@ -1,9 +1,9 @@
-import { Css, DocPrecursor, ArtifactType } from '@friends-library/types';
+import { DocPrecursor, ArtifactType } from '@friends-library/types';
 
 export function getCustomCss(
   customCss: DocPrecursor['customCode']['css'],
   type: ArtifactType,
-): Css | undefined {
+): string | undefined {
   const cssChunks = [customCss.all ?? ``];
 
   if ([`paperback-interior`, `web-pdf`].includes(type) && customCss.pdf !== undefined) {

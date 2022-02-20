@@ -1,11 +1,5 @@
 import { paperbackInterior as paperbackInteriorCss } from '@friends-library/doc-css';
-import {
-  DocPrecursor,
-  Html,
-  FileManifest,
-  PaperbackInteriorConfig,
-  PrintSize,
-} from '@friends-library/types';
+import { DocPrecursor, FileManifest, PrintSize } from '@friends-library/types';
 import { getPrintSizeDetails } from '@friends-library/lulu';
 import { evaluate as eval, PdfSrcResult } from '@friends-library/evaluator';
 import wrapHtmlBody from '../utils';
@@ -13,6 +7,7 @@ import frontmatter from './frontmatter';
 import { lineSvgMarkup, runningHead } from '../pdf-shared';
 import { getCustomCss } from '../custom-css';
 import { rangeFromVolIdx } from '../faux-volumes';
+import { PaperbackInteriorConfig } from '../types';
 
 export default async function paperbackInteriorManifests(
   dpc: DocPrecursor,
@@ -56,14 +51,14 @@ function pdfHtml(
   dpc: DocPrecursor,
   includeFrontmatter: boolean,
   volIdx?: number,
-): Html {
+): string {
   const [chStartIdx, chEndIdx] = rangeFromVolIdx(dpc.paperbackSplits, volIdx);
   const frontmatterHtml = includeFrontmatter ? frontmatter(dpc, src, volIdx) : ``;
   const bodyHtml = src.mergedChapterHtml(chStartIdx, chEndIdx);
   return frontmatterHtml + bodyHtml;
 }
 
-function wrapHtml(html: Html, dpc: DocPrecursor, printSize: PrintSize): Html {
+function wrapHtml(html: string, dpc: DocPrecursor, printSize: PrintSize): string {
   const { abbrev } = getPrintSizeDetails(printSize);
   return wrapHtmlBody(html, {
     title: dpc.meta.title,

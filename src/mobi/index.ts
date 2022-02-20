@@ -1,6 +1,7 @@
 import mapValues from 'lodash/mapValues';
-import { DocPrecursor, EbookConfig, FileManifest } from '@friends-library/types';
+import { DocPrecursor, FileManifest } from '@friends-library/types';
 import epub from '../epub';
+import { EbookConfig } from '../types';
 
 export default async function mobi(
   dpc: DocPrecursor,

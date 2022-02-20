@@ -1,5 +1,5 @@
 import { webPdf as css } from '@friends-library/doc-css';
-import { DocPrecursor, Html, FileManifest } from '@friends-library/types';
+import { DocPrecursor, FileManifest } from '@friends-library/types';
 import { evaluate as eval } from '@friends-library/evaluator';
 import wrapHtmlBody from '../utils';
 import { lineSvgMarkup } from '../pdf-shared';
@@ -18,7 +18,7 @@ export default async function webPdfManifests(
   ];
 }
 
-function wrapHtml(inner: Html, dpc: DocPrecursor): Html {
+function wrapHtml(inner: string, dpc: DocPrecursor): string {
   return wrapHtmlBody(inner, {
     title: dpc.meta.title,
     css: [`doc.css`],

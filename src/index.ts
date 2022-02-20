@@ -5,3 +5,4 @@ export { default as mobi } from './mobi';
 export { default as webPdf } from './web-pdf';
 export { default as appEbook } from './app-ebook';
 export { default as speech } from './speech';
+export { PaperbackCoverConfig, EbookConfig, PaperbackInteriorConfig } from './types';
